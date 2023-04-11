@@ -1,0 +1,49 @@
+<%- include('header') %>
+    <% if (tasks) { %>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Tasks</h3>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width: 10px">#</th>
+                            <th>Task</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% tasks.forEach(function(task) { %>
+                            <tr>
+                                <td><%=task.id%></td>
+                                <td><%=task.title%></td>
+                                <td>
+                                    <%=task.description%>
+                                </td>
+                                <td>
+                                    <% if(user.id === task.userId) { %>
+                                        <a class="btn btn-info" href="/task/edit/<%=task.id%>">Update</a>
+                                        <a class="btn btn-danger" href="/task/delete/<%=task.id%>">Delete</a>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- <div class="card-footer clearfix">
+                <ul class="pagination pagination-sm m-0 float-right">
+                    <li class="page-item"><a class="page-link" href="#">«</a></li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">»</a></li>
+                </ul>
+            </div> -->
+        </div>
+    <% } %>
+<%- include('footer') %>

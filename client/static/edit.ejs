@@ -1,0 +1,30 @@
+<%- include('header') %>
+
+    <div class="container">
+        <div class="justify-content-center align-items-center" style="height: 100vh;">
+            <h2>Edit task</h2>
+            <form method="POST" action="/task/edit">
+                <div class="card-body">
+                    <input type="text" name="id" value="<%=task.id%>" hidden>
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input name="title" type="text" class="form-control" id="title" placeholder="Enter title"
+                            value="<%=task.title%>">
+                    </div>
+                    <div class="form-group">
+                        <!-- <label for="exampleInputPassword1">Password</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password"> -->
+                        <label for="description">Description</label>
+                        <textarea class="form-control" name="description"
+                            placeholder="Enter description"><%=task.description%></textarea>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Save changes</button>
+                </div>
+        </div>
+        </form>
+    </div>
+
+    <%- include('footer') %>
