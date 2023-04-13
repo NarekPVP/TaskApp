@@ -3,6 +3,7 @@ export declare class UserController {
     private readonly userService;
     constructor(userService: UserService);
     getAllUsers(): Promise<any>;
-    loginUser(username: string, password: string, session: any): Promise<any>;
+    getCurrentUser(request: any): Promise<any>;
+    loginUser(username: string, password: string): Promise<any>;
     getUserById(id: string): Promise<any>;
 }

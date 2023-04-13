@@ -61,6 +61,13 @@ let UserService = class UserService {
         let user = users.find(user => user.id === id);
         return user;
     }
+    async getCurrentUser(token) {
+        return await (0, isomorphic_fetch_1.default)(`${this.keyCloakUrl}/realms/master/protocol/openid-connect/userinfo`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
     async loginUser(username, password) {
         const accessToken = await this.getToken({
             grant_type: this.keyCloakGrantType,
@@ -94,13 +101,6 @@ let UserService = class UserService {
             console.log('Authentication failed:', error.error_description);
             throw new Error();
         }
-    }
-    catch(error) {
-        return {
-            status: false,
-            statusCode: common_1.HttpStatus.UNAUTHORIZED,
-            message: "Failed to login"
-        };
     }
 };
 UserService = __decorate([

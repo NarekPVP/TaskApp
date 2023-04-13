@@ -3,7 +3,6 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TasksService } from './tasks.service';
 import { Task } from "./tasks.entity";
-import { REQUEST } from '@nestjs/core';
 
 @Controller('tasks')
 export class TasksController {
@@ -20,7 +19,7 @@ export class TasksController {
             return await this.tasksService.getTaskById(id);
         } catch {
             throw new HttpException(`Task not found with specified id: ${id}`, HttpStatus.NOT_FOUND);
-        }
+        }            
     }
 
     @Post()
@@ -37,8 +36,7 @@ export class TasksController {
             await this.tasksService.updateTask(id, updateTaskDto);
             return { status: HttpStatus.OK, message: "task has been updated" }
         } catch {
-            throw new HttpException(
-                'Task credentials are not correct', HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new HttpException('Task credentials are not correct', HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 

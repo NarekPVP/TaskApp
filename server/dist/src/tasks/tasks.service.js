@@ -22,7 +22,6 @@ let TasksService = class TasksService {
         this.taskRepository = taskRepository;
     }
     async getAllTasks() {
-        console.log(typeof this.taskRepository.find());
         return this.taskRepository.find({
             order: {
                 id: "desc"

@@ -18,45 +18,34 @@ const socket_io_1 = require("socket.io");
 const user_service_1 = require("./user/user.service");
 const create_message_dto_1 = require("./chat/dto/create-message.dto");
 const chat_service_1 = require("./chat/chat.service");
+const common_1 = require("@nestjs/common");
 let AppGateway = class AppGateway {
     constructor(userService, chatService) {
         this.userService = userService;
         this.chatService = chatService;
     }
-    async handleUser(payload, client) {
-        const currentUser = await this.userService.getUserById(payload.userId);
-        const userToChat = await this.userService.getUserById(payload.userToChatId);
-        const messages = await this.chatService.getAllMessages();
-        this.server.emit('users', { currentUser: currentUser, userToChat: userToChat, messages: messages });
-    }
     async handleNewMessage(payload) {
-        const newMessageDto = new create_message_dto_1.CreateMessageDto(payload.firstUser.id, payload.secondUser.id, payload.content);
+        const newMessageDto = new create_message_dto_1.CreateMessageDto(payload.currentUserId, payload.userToChatId, payload.content);
         try {
+            const currentUser = await this.userService.getUserById(payload.currentUserId);
+            const userToChatWith = await this.userService.getUserById(payload.userToChatId);
             const addedMessage = await this.chatService.addMessage(newMessageDto);
-            this.server.emit('send-new-message', {
+            const roomName = payload.currentUserId + "-" + payload.userToChatId;
+            this.server.to(roomName).emit('send-new-message', {
                 message: addedMessage,
-                creator: `${payload.firstUser.firstName} ${payload.firstUser.lastName} (${payload.firstUser.username})`
+                room: roomName,
+                creator: `${currentUser.firstName} ${currentUser.lastName} (${currentUser.username})`
             });
-            console.log("New message: ", addedMessage);
         }
         catch (_a) {
-            console.log("Something went wrong!");
+            throw new common_1.HttpException("Something went wrong please try again later!", common_1.HttpStatus.BAD_REQUEST);
         }
-        console.log(payload);
     }
 };
 __decorate([
     (0, websockets_1.WebSocketServer)(),
     __metadata("design:type", socket_io_1.Server)
 ], AppGateway.prototype, "server", void 0);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('initialize-user'),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __param(1, (0, websockets_1.ConnectedSocket)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, socket_io_1.Socket]),
-    __metadata("design:returntype", Promise)
-], AppGateway.prototype, "handleUser", null);
 __decorate([
     (0, websockets_1.SubscribeMessage)('new-message'),
     __param(0, (0, websockets_1.MessageBody)()),

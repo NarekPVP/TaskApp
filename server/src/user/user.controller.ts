@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param, Body, Post, HttpCode, HttpStatus, HttpException, Req, Session } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, Body, Post, HttpCode, HttpStatus, HttpException, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -11,15 +11,23 @@ export class UserController {
         return await this.userService.getAllUsers();
     }
 
+    @Get('current')
+    async getCurrentUser(@Req() request) {
+        const token = await request.headers.authorization.split(' ')[1]
+        const currentUser = await this.userService.getCurrentUser(token)
+        
+        return currentUser
+    }
+
     @Post("login")
     @HttpCode(HttpStatus.OK)
-    async loginUser(@Body('username') username: string, @Body('password') password: string, @Session() session) {
+    async loginUser(@Body('username') username: string, @Body('password') password: string) {
         try{
             return await this.userService.loginUser(username, password);
         } catch (error) {
             throw new HttpException('Login credentials are not correct', HttpStatus.UNPROCESSABLE_ENTITY);            
         }
-    }
+    }                
 
     @Get(':id')
     async getUserById(@Param('id') id: string) {

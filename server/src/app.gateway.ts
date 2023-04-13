@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { UserService } from './user/user.service';
 import { CreateMessageDto } from './chat/dto/create-message.dto';
 import { ChatService } from './chat/chat.service';
+import { HttpCode, HttpException, HttpStatus } from '@nestjs/common';
 
 @WebSocketGateway(5297, {
   cors: {
@@ -15,43 +16,35 @@ export class AppGateway {
 
   constructor(readonly userService: UserService, readonly chatService: ChatService) {}
 
-  @SubscribeMessage('initialize-user')
-  async handleUser(@MessageBody() payload: any, @ConnectedSocket() client: Socket) {
-    const currentUser = await this.userService.getUserById(payload.userId)
-    const userToChat = await this.userService.getUserById(payload.userToChatId)
-    const messages = await this.chatService.getAllMessages()
-    
-    // client.join("user-room")
-
-    this.server.emit('users', { currentUser: currentUser, userToChat: userToChat, messages: messages })
-  }
-
   @SubscribeMessage('new-message')
   async handleNewMessage(@MessageBody() payload: any) {
     const newMessageDto = new CreateMessageDto(
-      payload.firstUser.id,
-      payload.secondUser.id,
+      payload.currentUserId,
+      payload.userToChatId,
       payload.content
     );
 
     try {
-      const addedMessage = await this.chatService.addMessage(newMessageDto)
-      
-      // this.server.to('user-room').emit('send-new-message', {
-      //   message: addedMessage,
-      //   creator: `${payload.firstUser.firstName} ${payload.firstUser.lastName} (${payload.firstUser.username})`
-      // })
+      const currentUser = await this.userService.getUserById(payload.currentUserId)
+      const userToChatWith = await this.userService.getUserById(payload.userToChatId)
 
-      this.server.emit('send-new-message', {
+      const addedMessage = await this.chatService.addMessage(newMessageDto)
+
+      const roomName = payload.currentUserId + "-" + payload.userToChatId
+
+      this.server.to(roomName).emit('send-new-message', {
         message: addedMessage,
-        creator: `${payload.firstUser.firstName} ${payload.firstUser.lastName} (${payload.firstUser.username})`
+        room: roomName,
+        creator: `${currentUser.firstName} ${currentUser.lastName} (${currentUser.username})`
       })
 
-      console.log("New message: ", addedMessage)
     } catch {
-      console.log("Something went wrong!")
+      throw new HttpException("Something went wrong please try again later!", HttpStatus.BAD_REQUEST)
     }
-
-    console.log(payload)
   }
 }
+
+// this.server.to('user-room').emit('send-new-message', {
+//   message: addedMessage,
+//   creator: `${payload.firstUser.firstName} ${payload.firstUser.lastName} (${payload.firstUser.username})`
+// })

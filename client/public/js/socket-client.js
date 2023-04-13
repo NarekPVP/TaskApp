@@ -3,35 +3,30 @@ const messageContainer = document.getElementById('messages')
 const messageForm = document.getElementById('send-container')
 const messageInput = document.getElementById('message-textarea')
 
-window.onload = () => {
-  socket.emit('initialize-user', { userToChatId: messageInput.dataset.usertochat, userId: messageInput.dataset.id })
-}
+const room = messageInput.dataset.id + '-' + messageInput.dataset.usertochat
 
-let currentUser, userToChat
+console.log(room)
 
-socket.on('users', data => {
-  currentUser = data.currentUser
-  userToChat = data.userToChat
-
-  let messages = data.messages
-
-  console.log("hello from user-room")
+socket.on('connect', () => {
+  console.log("Connected to socket");
+  // socket.join(room)
+  console.log("Connecting to room: " + room)
 })
 
 messageForm.addEventListener('submit', e => {
-  e.preventDefault();
-  const message = messageInput.value
-
-  console.log(message)
-
-  // appendMessage(`${message}`)
-  
-  socket.emit('new-message', { firstUser: currentUser, secondUser: userToChat, content: message })
+  e.preventDefault()
+  console.log("Handling event")
+  socket.emit('new-message', {
+    currentUserId: messageInput.dataset.id,
+    userToChatId: messageInput.dataset.usertochat,
+    content: messageInput.value
+  });
 
   messageInput.value = ''
 })
 
-socket.on('send-new-message', data => {
+socket.to(room).on('send-new-message', data => {
+  console.log(data)
   appendMessage(data.message.content, data.creator)
 })
 

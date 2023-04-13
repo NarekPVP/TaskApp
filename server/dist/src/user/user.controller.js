@@ -22,7 +22,12 @@ let UserController = class UserController {
     async getAllUsers() {
         return await this.userService.getAllUsers();
     }
-    async loginUser(username, password, session) {
+    async getCurrentUser(request) {
+        const token = await request.headers.authorization.split(' ')[1];
+        const currentUser = await this.userService.getCurrentUser(token);
+        return currentUser;
+    }
+    async loginUser(username, password) {
         try {
             return await this.userService.loginUser(username, password);
         }
@@ -47,13 +52,19 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getAllUsers", null);
 __decorate([
+    (0, common_1.Get)('current'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getCurrentUser", null);
+__decorate([
     (0, common_1.Post)("login"),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Body)('username')),
     __param(1, (0, common_1.Body)('password')),
-    __param(2, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "loginUser", null);
 __decorate([

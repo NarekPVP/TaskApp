@@ -1,4 +1,7 @@
-import { HttpStatus, Injectable, Req, Session } from '@nestjs/common';
+import {
+    HttpStatus,    
+    Injectable
+} from '@nestjs/common';
 import fetch from 'isomorphic-fetch';
 import { ConfigService } from "@nestjs/config"
 
@@ -10,6 +13,7 @@ export class UserService {
     private readonly keyCloakAppRealmClientSecret: string;
     private readonly keyCloakRealmName: string;
     private readonly keyCloakGrantType: string;
+
     constructor(private readonly configService: ConfigService) {
         this.keyCloakUrl = this.configService.get<string>('KEYCLOAK_URL');
         this.keyCloakClientId = this.configService.get<string>('KEYCLOAK_CLIENT_ID');
@@ -68,6 +72,14 @@ export class UserService {
         return user;
     }
 
+    async getCurrentUser(token: string): Promise<any>{
+        return await fetch(`${this.keyCloakUrl}/realms/master/protocol/openid-connect/userinfo`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+    }
+
     async loginUser(username: string, password: string): Promise<any> {
         const accessToken = await this.getToken({
             grant_type: this.keyCloakGrantType,
@@ -100,6 +112,7 @@ export class UserService {
             const user = users.find(user => user.username === username);
             
             if(user) {
+                // TODO: Save user id
                 return { ...user, token: accessToken};
             }
 
@@ -109,12 +122,6 @@ export class UserService {
             console.log('Authentication failed:', error.error_description);
             throw new Error(); // goto catch
         }
-    } catch(error) {
-        return {
-            status: false,
-            statusCode: HttpStatus.UNAUTHORIZED,
-            message: "Failed to login"
-        };
     }
 }
 

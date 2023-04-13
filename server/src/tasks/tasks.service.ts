@@ -14,7 +14,6 @@ export class TasksService {
     ) {}
 
     async getAllTasks(): Promise<Task[]> {
-        console.log(typeof this.taskRepository.find());
         return this.taskRepository.find({
             order: {
                 id: "desc"
