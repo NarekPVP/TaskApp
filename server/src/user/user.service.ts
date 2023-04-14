@@ -33,6 +33,7 @@ export class UserService {
         });
 
         const token = await response.json();
+        
         if (!token.access_token) {
             throw new Error('Token response does not contain an access_token');
         }

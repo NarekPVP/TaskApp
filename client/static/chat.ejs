@@ -28,7 +28,6 @@
                     </div>
                     <div class="pt-1">
                       <p class="small text-muted mb-1">Just now</p>
-                      <span class="badge bg-danger float-end">22</span>
                     </div>
                   </a>
                 </li>
@@ -101,4 +100,8 @@
     </div>
   </section>
   <% } %>
+
+  <!-- Socket.io -->
+  <script src="http://localhost:5297/socket.io/socket.io.js"></script>
+  <script src="/js/socket-client.js"></script>
   <%- include('footer') %>

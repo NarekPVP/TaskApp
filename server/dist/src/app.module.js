@@ -46,6 +46,9 @@ const chat_service_1 = require("./chat/chat.service");
 const chat_controller_1 = require("./chat/chat.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const chat_entity_1 = require("./chat/chat.entity");
+const room_controller_1 = require("./room/room.controller");
+const room_service_1 = require("./room/room.service");
+const room_entity_1 = require("./room/room.entity");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -73,11 +76,12 @@ AppModule = __decorate([
                 isGlobal: true,
             }),
             typeorm_1.TypeOrmModule.forFeature([chat_entity_1.Chat]),
+            typeorm_1.TypeOrmModule.forFeature([room_entity_1.Room]),
             database_module_1.DatabaseModule,
             tasks_module_1.TasksModule
         ],
-        controllers: [app_controller_1.AppController, user_controller_1.UserController, chat_controller_1.ChatController],
-        providers: [app_service_1.AppService, user_service_1.UserService, chat_service_1.ChatService, app_gateway_1.AppGateway],
+        controllers: [app_controller_1.AppController, user_controller_1.UserController, chat_controller_1.ChatController, room_controller_1.RoomController],
+        providers: [app_service_1.AppService, user_service_1.UserService, chat_service_1.ChatService, room_service_1.RoomService, app_gateway_1.AppGateway],
     })
 ], AppModule);
 exports.AppModule = AppModule;

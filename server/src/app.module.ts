@@ -15,6 +15,10 @@ import { ChatService } from './chat/chat.service';
 import { ChatController } from './chat/chat.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Chat } from './chat/chat.entity';
+import { RoomController } from './room/room.controller';
+import { RoomModule } from './room/room.module';
+import { RoomService } from './room/room.service';
+import { Room } from './room/room.entity';
 
 @Module({
   imports: [
@@ -40,10 +44,11 @@ import { Chat } from './chat/chat.entity';
       isGlobal: true,
     }),
     TypeOrmModule.forFeature([Chat]),
+    TypeOrmModule.forFeature([Room]),
     DatabaseModule,
     TasksModule
   ],
-  controllers: [AppController, UserController, ChatController],
-  providers: [AppService, UserService, ChatService, AppGateway],
+  controllers: [AppController, UserController, ChatController, RoomController],
+  providers: [AppService, UserService, ChatService, RoomService, AppGateway],
 })
 export class AppModule {}

@@ -19,25 +19,50 @@ const user_service_1 = require("./user/user.service");
 const create_message_dto_1 = require("./chat/dto/create-message.dto");
 const chat_service_1 = require("./chat/chat.service");
 const common_1 = require("@nestjs/common");
+const room_service_1 = require("./room/room.service");
+const create_room_dto_1 = require("./room/dto/create-room.dto");
 let AppGateway = class AppGateway {
-    constructor(userService, chatService) {
+    constructor(userService, chatService, roomService) {
         this.userService = userService;
         this.chatService = chatService;
+        this.roomService = roomService;
     }
-    async handleNewMessage(payload) {
+    onModuleInit() {
+        this.server.on('connection', (socket) => {
+            socket.on('get-user-ids', async (ids) => {
+                console.log("ids: " + ids);
+                const currentRoom = await this.roomService.getRoomByUsersId([ids.userToChatId, ids.currentUserId]);
+                if (!currentRoom) {
+                    console.log("Room not found creating new one");
+                    const roomDto = new create_room_dto_1.CreateRoomDto();
+                    roomDto.users = [ids.userToChatId, ids.currentUserId];
+                    await this.roomService.createRoom(roomDto);
+                    this.onModuleInit();
+                }
+                socket.join(`room-${currentRoom.id}`);
+            });
+        });
+    }
+    async handleNewMessage(payload, client) {
+        console.log(payload);
         const newMessageDto = new create_message_dto_1.CreateMessageDto(payload.currentUserId, payload.userToChatId, payload.content);
+        const currentRoom = await this.roomService.getRoomByUsersId([payload.userToChatId, payload.currentUserId]);
+        const roomName = `room-${currentRoom.id}`;
         try {
             const currentUser = await this.userService.getUserById(payload.currentUserId);
             const userToChatWith = await this.userService.getUserById(payload.userToChatId);
+            if (!currentUser && !userToChatWith) {
+                throw new common_1.HttpException("Bad request", common_1.HttpStatus.BAD_REQUEST);
+            }
             const addedMessage = await this.chatService.addMessage(newMessageDto);
-            const roomName = payload.currentUserId + "-" + payload.userToChatId;
             this.server.to(roomName).emit('send-new-message', {
                 message: addedMessage,
                 room: roomName,
                 creator: `${currentUser.firstName} ${currentUser.lastName} (${currentUser.username})`
             });
         }
-        catch (_a) {
+        catch (err) {
+            console.log(err);
             throw new common_1.HttpException("Something went wrong please try again later!", common_1.HttpStatus.BAD_REQUEST);
         }
     }
@@ -50,7 +75,7 @@ __decorate([
     (0, websockets_1.SubscribeMessage)('new-message'),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, socket_io_1.Socket]),
     __metadata("design:returntype", Promise)
 ], AppGateway.prototype, "handleNewMessage", null);
 AppGateway = __decorate([
@@ -59,7 +84,7 @@ AppGateway = __decorate([
             origin: "*"
         }
     }),
-    __metadata("design:paramtypes", [user_service_1.UserService, chat_service_1.ChatService])
+    __metadata("design:paramtypes", [user_service_1.UserService, chat_service_1.ChatService, room_service_1.RoomService])
 ], AppGateway);
 exports.AppGateway = AppGateway;
 //# sourceMappingURL=app.gateway.js.map
