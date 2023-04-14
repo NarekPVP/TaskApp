@@ -1,73 +1,271 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+### Authentication API (KeyCloak)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+#### Login
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+**POST** `http://{url}/user/login`
 
-## Description
+##### Body
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ npm install
+```json
+{
+    "username": "narekprog2",
+    "password": "nareknarek"
+}
 ```
 
-## Running the app
+##### success login
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```json
+{
+    "id": "f0439c86-0429-4fda-8da1-e5ce403c8342",
+    "createdTimestamp": 1680711118964,
+    "username": "narekprog2",
+    "enabled": true,
+    "totp": false,
+    "emailVerified": false,
+    "firstName": "Narek",
+    "lastName": "Hovhannisyan",
+    "email": "hnarek20052@gmail.com",
+    "disableableCredentialTypes": [],
+    "requiredActions": [],
+    "notBefore": 0,
+    "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": false,
+        "manage": true
+    }
+}
 ```
 
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+##### failed login
+```json
+{
+    "statusCode": 422, // Unprocessable Entity
+    "message": "Login credentials are not correct"
+}
 ```
 
-## Support
+#### Get all users
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**GET** `http://{url}/user`
 
-## Stay in touch
+Response
+```json
+[
+    {
+        "id": "f0439c86-0429-4fda-8da1-e5ce403c8342",
+        "createdTimestamp": 1680711118964,
+        "username": "narekprog2",
+        "enabled": true,
+        "totp": false,
+        "emailVerified": false,
+        "firstName": "Narek",
+        "lastName": "Hovhannisyan",
+        "email": "hnarek20052@gmail.com",
+        "disableableCredentialTypes": [],
+        "requiredActions": [],
+        "notBefore": 0,
+        "access": {
+            "manageGroupMembership": true,
+            "view": true,
+            "mapRoles": true,
+            "impersonate": false,
+            "manage": true
+        }
+    },
+    {
+        "id": "683a8d17-86aa-4009-b011-3ea7d83e903b",
+        "createdTimestamp": 1680702567401,
+        "username": "narekpvp",
+        "enabled": true,
+        "totp": false,
+        "emailVerified": false,
+        "firstName": "Narek",
+        "lastName": "Hovhannisyan",
+        "email": "hnarek2005@gmail.com",
+        "disableableCredentialTypes": [],
+        "requiredActions": [],
+        "notBefore": 0,
+        "access": {
+            "manageGroupMembership": true,
+            "view": true,
+            "mapRoles": true,
+            "impersonate": false,
+            "manage": true
+        }
+    }
+]
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+#### Get user by id
 
-## License
+**GET** `http://{url}/user/{id:guid}`
 
-Nest is [MIT licensed](LICENSE).
+If user found with specified id
+
+```json
+{
+    "id": "f0439c86-0429-4fda-8da1-e5ce403c8342",
+    "createdTimestamp": 1680711118964,
+    "username": "narekprog2",
+    "enabled": true,
+    "totp": false,
+    "emailVerified": false,
+    "firstName": "Narek",
+    "lastName": "Hovhannisyan",
+    "email": "hnarek20052@gmail.com",
+    "disableableCredentialTypes": [],
+    "requiredActions": [],
+    "notBefore": 0,
+    "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": false,
+        "manage": true
+    }
+}
+```
+
+else we will get
+
+```json
+{
+    "statusCode": 404,
+    "message": "User with specified id %id not found!",
+    "error": "Not Found"
+}
+```
+
+#### Tasks API
+
+##### Get all tasks
+
+**GET** `http://{url}/tasks`
+
+**response**
+
+```json
+[
+    {
+        "id": 10,
+        "title": "How to create Unit test in Nest.js",
+        "description": "Read documentation...",
+        "createdAt": "2023-04-01",
+        "updatedAt": null
+    },
+    {
+        "id": 9,
+        "title": "How to create Unit test in C#",
+        "description": "use Microsoft.Testing lib",
+        "createdAt": "2023-04-01",
+        "updatedAt": null
+    }
+    // ...
+]
+```
+
+##### Create a new task
+
+**POST** `http://{url}/tasks`
+
+##### Body
+
+```json
+{
+    "title": "Some task",
+    "description": "Some task description",
+    "createdAt": "2023-04-01T13:07:13.154Z"
+}
+```
+
+**response**
+
+```json
+{
+    "id": 22,
+    "title": "Some task",
+    "description": "Some task description",
+    "createdAt": "2023-04-01T13:07:13.154Z",
+    "updatedAt": null
+}
+```
+
+##### Get task with specified id
+
+**GET** `http://{url}/tasks/{id:int}`
+
+If task found with specified id
+
+```json
+{
+    "id": 2,
+    "title": "How to create Unit test in C#",
+    "description": "use Microsoft.Testing lib",
+    "createdAt": "2023-03-30",
+    "updatedAt": "2023-03-30"
+}
+```
+
+If task not found with specified id
+
+```json
+{
+    "statusCode": 404,
+    "message": "Task not found with specified id: {id}"
+}
+```
+
+##### Update an existing task
+**PUT** `http://{url}/tasks/{id:int}`
+
+##### Body
+
+```json
+{
+    "title": "Updated title",
+    "description": "Updated description",
+    "updatedAt": "2023-04-01"
+}
+```
+
+Success response
+
+```json
+{
+    "status": 200,
+    "message": "task has been updated"
+}
+```
+
+If something went wrong we will get
+
+```json
+{
+    "statusCode": 422,
+    "message": "Task credentials are not correct"
+}
+```
+
+##### Delete task with specifed id
+**DELETE** `http://{url}/tasks/{id:int}`
+
+if task was found with specified id
+
+```json
+{
+    "status": 200,
+    "message": "Task with id: %id has been deleted"
+}
+```
+
+else
+
+```json
+{
+    "statusCode": 404,
+    "message": "Task with specified id %id not found!"
+}
+```
